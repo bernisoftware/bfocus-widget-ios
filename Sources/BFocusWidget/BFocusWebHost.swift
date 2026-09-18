@@ -87,7 +87,7 @@ public final class BFocusWebHost: NSObject {
             let script = "window.location.replace(\(BFocusJSON.quote(url.absoluteString))); window.location.reload(); 1"
             webView.evaluateJavaScript(script) { [weak self] _, error in
                 guard error != nil else { return }
-                Task { @MainActor in self?.webView.load(URLRequest(url: url)) }
+                Task { @MainActor [weak self] in self?.webView.load(URLRequest(url: url)) }  // recaptura: Swift 5.10
             }
         } else {
             webView.load(URLRequest(url: url))

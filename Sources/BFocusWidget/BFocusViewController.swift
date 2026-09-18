@@ -154,7 +154,9 @@ public final class BFocusViewController: UIViewController {
         lastPathSatisfied = nil
         monitor.pathUpdateHandler = { [weak self] path in
             let satisfied = path.status == .satisfied
-            Task { @MainActor in self?.pathChanged(satisfied) }
+            // Recaptura fraca no Task: o Swift 5.10 (Xcode 15.4) recusa usar o `self` da closure
+            // de fora ("captured var in concurrently-executing code").
+            Task { @MainActor [weak self] in self?.pathChanged(satisfied) }
         }
         monitor.start(queue: DispatchQueue(label: "br.com.bernisoftware.bfocus.network"))
         pathMonitor = monitor

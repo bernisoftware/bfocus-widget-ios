@@ -400,15 +400,17 @@ public final class BFocus: ObservableObject {
 
     private func observeApplication() {
         let center = NotificationCenter.default
+        // Recaptura fraca em cada Task: o Swift 5.10 (Xcode 15.4) recusa usar o `self` da closure
+        // de fora ("captured var in concurrently-executing code").
         observers = [
             center.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
-                Task { @MainActor in self?.applicationDidEnterBackground() }
+                Task { @MainActor [weak self] in self?.applicationDidEnterBackground() }
             },
             center.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
-                Task { @MainActor in self?.applicationWillEnterForeground() }
+                Task { @MainActor [weak self] in self?.applicationWillEnterForeground() }
             },
             center.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
-                Task { @MainActor in self?.applicationDidBecomeActive() }
+                Task { @MainActor [weak self] in self?.applicationDidBecomeActive() }
             },
         ]
     }
