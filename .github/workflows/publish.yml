@@ -1,0 +1,74 @@
+# Publicação do espelho bernisoftware/bfocus-widget-ios. O SwiftPM consome a própria tag vX.Y.Z;
+# aqui só se garante que a tag está testada, bate com a versão do pacote e ganha uma release.
+name: publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: swift test + build iOS (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        # macos-14 = Xcode 15 / Swift 5.10 (menor toolchain do swift-tools-version 5.9);
+        # macos-latest = Xcode mais novo.
+        os: [macos-14, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      # Os testes de integração com o servidor simulado precisam de widgets-native/conformance
+      # (só existe no monorepo): aqui eles são pulados (XCTSkip) e o resto roda.
+      - name: swift test (macOS)
+        run: swift test
+
+      - name: xcodebuild build (iOS Simulator)
+        run: |
+          xcodebuild build \
+            -scheme BFocusWidget \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
+
+  release:
+    name: tag = versão → release
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Confere tag = BFocusWidgetInfo.version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION="$(sed -n 's/.*static let version = "\(.*\)".*/\1/p' Sources/BFocusWidgetCore/BFocusWidgetInfo.swift)"
+          echo "tag=$TAG versão=$VERSION"
+          if [ -z "$VERSION" ] || [ "$TAG" != "$VERSION" ]; then
+            echo "::error::A tag v$TAG não bate com BFocusWidgetInfo.version ($VERSION)."
+            exit 1
+          fi
+
+      - name: Notas da versão (CHANGELOG)
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" { on = 1; next }
+            on && /^## \[/ { exit }
+            on { print }
+          ' CHANGELOG.md > release-notes.md
+          [ -s release-notes.md ] || echo "Versão $VERSION." > release-notes.md
+
+      - name: Release do GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file release-notes.md
