@@ -122,7 +122,7 @@ final class MockServerIntegrationTests: XCTestCase {
         XCTAssertEqual(headers["x-bfocus-widget-key"], "bf_pk_test_123", file: file, line: line)
         XCTAssertEqual(headers["x-bfocus-widget-user"], config.userBase64, file: file, line: line)
         XCTAssertEqual(headers["x-bfocus-parent-origin"], "app://com.empresa.erp", file: file, line: line)
-        XCTAssertEqual(headers["x-bfocus-client"], "ios/0.1.0", file: file, line: line)
+        XCTAssertEqual(headers["x-bfocus-client"], BFocusWidgetInfo.client, file: file, line: line)
     }
 
     func testDefaultScenario() async throws {

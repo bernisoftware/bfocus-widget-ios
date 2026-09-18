@@ -253,7 +253,7 @@ final class FacadeTests: XCTestCase {
         // Mesma configuração de novo: nada muda, nenhuma chamada extra.
         try facade.initialize(config: config())
         XCTAssertEqual(transport.requests.count, 1)
-        XCTAssertEqual(transport.requests.first?.value(forHTTPHeaderField: "X-bFocus-Client"), "ios/0.1.0")
+        XCTAssertEqual(transport.requests.first?.value(forHTTPHeaderField: "X-bFocus-Client"), BFocusWidgetInfo.client)
         facade.logout()
     }
 

@@ -141,6 +141,9 @@ final class EngineTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(transport.requests.count, 3, "consulta periódica")
 
         engine.setWidgetOpen(true)
+        // Uma consulta disparada logo antes de abrir pode terminar depois (runner lento): conta a
+        // partir de quando ela assenta.
+        await pause(0.15)
         let atOpen = transport.requests.count
         await pause(0.35)
         XCTAssertEqual(transport.requests.count, atOpen, "aberto não consulta")

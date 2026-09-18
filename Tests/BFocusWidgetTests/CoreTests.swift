@@ -4,7 +4,7 @@ import BFocusWidgetCore
 /// Casos de borda do núcleo que o scenarios.json não cobre.
 final class CoreTests: XCTestCase {
     func testClientHeaderIsIOS() {
-        XCTAssertEqual(BFocusWidgetInfo.client, "ios/0.1.0")
+        XCTAssertEqual(BFocusWidgetInfo.client, "ios/\(BFocusWidgetInfo.version)")
     }
 
     func testRFC3986Encoding() {
@@ -116,7 +116,7 @@ final class CoreTests: XCTestCase {
         let resolved = try make(appId: nil).resolved(defaultAppId: "Com.Bundle.App", deviceLocale: .es)
         XCTAssertEqual(resolved.parentOrigin, "app://com.bundle.app")
         XCTAssertEqual(resolved.locale, .es)
-        XCTAssertEqual(resolved.client, "ios/0.1.0")
+        XCTAssertEqual(resolved.client, "ios/\(BFocusWidgetInfo.version)")
         XCTAssertNil(resolved.userHash)
     }
 
