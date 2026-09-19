@@ -5,7 +5,7 @@
 > handles the native parts: launcher button with badge, release-notes version pill and mandatory
 > acknowledgement banner, `launcher-state` polling (foreground only, widget closed), push (FCM token
 > registration + `handlePush`), downloads, external links, offline screen. Swift Package Manager
-> only (`https://github.com/bernisoftware/bfocus-widget-ios`, from `0.1.0`), iOS 15+, no third-party
+> only (`https://github.com/bernisoftware/bfocus-widget-ios`, from `0.1.2`), iOS 15+, no third-party
 > dependencies. Only the public key `bf_pk_…` and a `userHash` computed **on your server** go into
 > the app. API: `BFocus.shared.initialize(config:)`, `open(_:)`, `close()`,
 > `openReleaseNotesHistory()`, `refresh()`, `logout()`, `registerPushToken(_:)`, `handlePush(_:)`;
@@ -22,19 +22,19 @@ tela de "sem conexão".
 - Swift Package Manager. Sem CocoaPods.
 - **Sem dependências de terceiros**: só frameworks da Apple (Foundation, UIKit, SwiftUI, Combine,
   WebKit, Network).
-- Header `X-bFocus-Client: ios/0.1.0`.
+- Header `X-bFocus-Client: ios/0.1.2`.
 
 ## Instalação
 
 No Xcode: **File → Add Package Dependencies…** →
-`https://github.com/bernisoftware/bfocus-widget-ios`, regra "Up to Next Major" a partir de `0.1.0`,
+`https://github.com/bernisoftware/bfocus-widget-ios`, regra "Up to Next Major" a partir de `0.1.2`,
 produto **BFocusWidget**.
 
 Ou no `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/bernisoftware/bfocus-widget-ios", from: "0.1.0"),
+    .package(url: "https://github.com/bernisoftware/bfocus-widget-ios", from: "0.1.2"),
 ],
 targets: [
     .target(name: "MeuApp", dependencies: [
